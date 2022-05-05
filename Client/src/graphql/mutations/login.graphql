@@ -1,0 +1,14 @@
+# Write your query or mutation here
+mutation login($username: String!, $password:String!){
+  login(options: {username: $username, password:$password}){
+    errors{
+      field
+      message
+    }
+    user{
+      id
+      username
+    }
+  }
+   
+} 
