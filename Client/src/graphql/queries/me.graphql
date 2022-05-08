@@ -1,6 +1,6 @@
-query me{ #giving name to the hook
+query me{ # giving name to the hook
     me {
-        id
-        username
+      ...RegularUser # created a "type" user to have the ability of adding more fields to show 
+      # with having lower scope of change
     }
 }

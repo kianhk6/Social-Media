@@ -4,7 +4,6 @@ import { AppProps } from 'next/app'
 import { Provider, createClient, dedupExchange, fetchExchange } from 'urql'
 import { cacheExchange, Cache, QueryInput } from '@urql/exchange-graphcache'; //for custom updates 
 import { LoginMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql';
-import e from 'cors';
 
 function betterUpdateQuery<Result, Query>(
   cache: Cache,
@@ -33,6 +32,7 @@ const client = createClient({
             cache,
             { query: MeDocument },
             _result, 
+            //updating query after mutation happens
             (result, query) => {
               if (result.login.errors) {
                 return query; //if there was a error through our result of query

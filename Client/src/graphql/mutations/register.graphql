@@ -6,8 +6,8 @@ mutation Register($username: String!, $password:String!){
         message
       }
       user{
-        id
-        username
+      ...RegularUser # created a "type" user to have the ability of adding more fields to show 
+      # with having lower scope of change
       }
     }
      
