@@ -25,21 +25,25 @@ const client = createClient({
   exchanges: [dedupExchange, cacheExchange({
     updates: {
       Mutation: {
+        logout: (_result, args, cache, info)=>{
+
+        },
+        //so when we login it goes to user's page right away by the cache mechanism in the middleware
         login: (_result, args, cache, info) => {
-          //update the query of what we are getting which is a login query that returns user
-          //if successfull (second else)
+          // update the query of what we are getting which is a login query that returns user
+          // if successfull (second else)
           betterUpdateQuery<LoginMutation, MeQuery>(
             cache,
             { query: MeDocument },
             _result, 
-            //updating query after mutation happens
+            // updating query after mutation happens
             (result, query) => {
               if (result.login.errors) {
-                return query; //if there was a error through our result of query
+                return query; // if there was a error through our result of query
               }
               else {
                 return {
-                  me: result.login.user, //if there was none there must be user so return it
+                  me: result.login.user, // if there was none there must be user so return it
                 }
               }
 
