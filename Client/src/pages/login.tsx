@@ -1,12 +1,13 @@
-import React from 'react'
-import { Formik, Form } from "formik";
-import { FormControl, FormLabel, Input, FormErrorMessage, Box, Button } from "@chakra-ui/react"
-import { Wrapper } from '../components/Wrapper';
+import { Box, Button } from "@chakra-ui/react";
+import { Form, Formik } from "formik";
+import { withUrqlClient } from "next-urql";
+import { useRouter } from "next/router";
+import React from 'react';
 import { InputField } from '../components/InputField';
-import { useMutation } from 'urql';
+import { Wrapper } from '../components/Wrapper';
 import { useLoginMutation } from '../generated/graphql';
+import { createUrqlClient } from "../util/createUrqlClient";
 import { toErrorMap } from '../util/toErrorMap';
-import Router, {useRouter} from "next/router"
 
 
 export const Login: React.FC<{}> = ({ }) => {
@@ -68,4 +69,4 @@ export const Login: React.FC<{}> = ({ }) => {
     );
 } //
 
-export default Login;
+export default withUrqlClient(createUrqlClient)(Login); //no ssr since static

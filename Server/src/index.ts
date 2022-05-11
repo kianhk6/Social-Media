@@ -1,6 +1,6 @@
 import { MikroORM } from "@mikro-orm/core";
 import "reflect-metadata";
-import { __prod__ } from "./constants";
+import { __prod__, COOKIE_NAME } from "./constants";
 import microConfig from "./mikro-orm.config";
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
@@ -21,6 +21,7 @@ const main = async () => {
     
     const app = express();
 
+    // @ts-ignore
     const RedisStore = connectRedis(session);//
     const redisClient = redis.createClient();
     app.use(
@@ -36,7 +37,8 @@ const main = async () => {
     //session middle ware must run before apollo 
     app.use(
         session({
-            name: 'qid', //name of cookie
+            name: COOKIE_NAME, //name of cookie
+            // @ts-ignore
             store: new RedisStore({
                 client: redisClient, 
                 disableTouch: true,

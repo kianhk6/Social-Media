@@ -12,6 +12,7 @@ import {
     ObjectType,
 } from "type-graphql";
 import argon2 from "argon2"; //better than bycrypt according to stackoverflow
+import { COOKIE_NAME } from "../constants";
 //graphQl
 @InputType() //input type is for arguments
 class UsernamePasswordInput {
@@ -150,5 +151,20 @@ export class UserResolver {
     users( @Ctx() {em}: MyContext) : Promise<User []>{ //returns a promise of post
         
         return em.find(User, {}) //finds all the posts
+    }
+
+    @Mutation(() => Boolean)
+    logout(@Ctx() { req, res }: MyContext) {
+      return new Promise((resolve) =>
+        req.session.destroy((err) => {
+            res.clearCookie(COOKIE_NAME);
+            if (err) {
+                console.log(err);
+                resolve(false);
+                return;
+            }
+          resolve(true);
+        })
+      );
     }
 }

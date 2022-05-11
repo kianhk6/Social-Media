@@ -8,7 +8,10 @@ interface NavBarProps {
 
 export const NavBar: React.FC<NavBarProps> = ({ }) => {
     const [{fetching: logoutFetching} ,logout] = useLogoutMutation();
-    const [{ data, fetching }] = useMeQuery();
+    // for getting users we use this hook and in app.tsx
+    const [{ data, fetching }] = useMeQuery({
+        pause: true
+    });  // if user is logged out in the middleware its set to null
     let body = null;
     //data is loading
     if (fetching) {
