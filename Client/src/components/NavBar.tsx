@@ -2,6 +2,7 @@ import { Box, Button, Flex, Link } from '@chakra-ui/react';
 import React from 'react'
 import NextLink from 'next/link'; //for linking to pages navigation
 import { useLogoutMutation, useMeQuery } from '../generated/graphql';
+import { isServer } from '../util/isSever';
 interface NavBarProps {
 
 }
@@ -10,7 +11,7 @@ export const NavBar: React.FC<NavBarProps> = ({ }) => {
     const [{fetching: logoutFetching} ,logout] = useLogoutMutation();
     // for getting users we use this hook and in app.tsx
     const [{ data, fetching }] = useMeQuery({
-        pause: true
+        pause: isServer(),  // doesnt run the request if we are already on the server 
     });  // if user is logged out in the middleware its set to null
     let body = null;
     //data is loading

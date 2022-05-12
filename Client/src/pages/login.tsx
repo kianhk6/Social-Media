@@ -17,7 +17,7 @@ export const Login: React.FC<{}> = ({ }) => {
         <Wrapper varient='small'>
             <Formik //since the keys "username and password" exactly line up with the mutation name 
             //passing just the values will work
-                initialValues={{ username: "", password: "" }}
+                initialValues={{ usernameOrEmail: "", password: "" }}
                 onSubmit={async (values, {setErrors}) => {
                     const response = await login(values); //using the register with 
                     //useRegisterMutation we send the values to back
@@ -36,9 +36,9 @@ export const Login: React.FC<{}> = ({ }) => {
                 {({ isSubmitting }) => (
                     <Form>
                         <InputField
-                            name='username'
-                            placeholder='username'
-                            label='Username' 
+                            name='usernameOrEmail'
+                            placeholder='username or email'
+                            label='Username or Email' 
                         />
                         <Box mt={4}>
                             <InputField

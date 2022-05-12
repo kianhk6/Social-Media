@@ -21,6 +21,12 @@ export class User {
   @Property({type: "text", unique: true}) //specifically choosing type
   username!: string; //username! means it can't be null
 
+
+  @Field() 
+  @Property({type: "text", unique: true}) //--> set nullable to true if u are adding field durin production
+  email!: string; 
+
+
   //not allowing to select password in graphQL and its hash password anyways
   @Property({type:"text"})
   password!: string;

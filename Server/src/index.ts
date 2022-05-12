@@ -12,17 +12,16 @@ import * as redis from 'redis';
 import connectRedis from 'connect-redis';
 import session from "express-session";
 import cors from 'cors';
-const main = async () => {
-    const orm = await MikroORM.init(microConfig);//
-    await orm.getMigrator().up();
 
+const main = async () => {
+    const orm = await MikroORM.init(microConfig);
     const generator = orm.getSchemaGenerator(); //for generating the table
     await generator.updateSchema();
     
     const app = express();
 
     // @ts-ignore
-    const RedisStore = connectRedis(session);//
+    const RedisStore = connectRedis(session);
     const redisClient = redis.createClient();
     app.use(
         cors({
