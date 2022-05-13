@@ -1,14 +1,7 @@
 # Write your query or mutation here
 mutation login($usernameOrEmail: String!, $password:String!){
   login(usernameOrEmail: $usernameOrEmail, password:$password){
-    errors{
-      field
-      message
-    }
-    user{
-      ...RegularUser #created a "type" user to have the ability of adding more fields to show 
-      #with having lower scope of change
-    }
+    ...RegularUserResponse
   }
    
 } 

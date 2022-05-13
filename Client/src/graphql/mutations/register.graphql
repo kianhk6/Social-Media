@@ -1,14 +1,7 @@
 # how to write mutation without hardcoding the fields 
 mutation Register($options: UsernamePasswordInput!){
     register(options: $options){
-      errors{
-        field
-        message
-      }
-      user{
-      ...RegularUser # created a "type" user to have the ability of adding more fields to show 
-      # with having lower scope of change
-      }
+      ...RegularUserResponse
     }
      
 }

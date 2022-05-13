@@ -8,10 +8,11 @@ import { buildSchema } from 'type-graphql'; //for schema field in apollo server 
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
-import * as redis from 'redis';
+import Redis from 'ioredis';
 import connectRedis from 'connect-redis';
 import session from "express-session";
 import cors from 'cors';
+
 
 const main = async () => {
     const orm = await MikroORM.init(microConfig);
@@ -22,7 +23,7 @@ const main = async () => {
 
     // @ts-ignore
     const RedisStore = connectRedis(session);
-    const redisClient = redis.createClient();
+    const redis = new Redis();
     app.use(
         cors({
             origin: 'http://localhost:3000',
@@ -30,7 +31,7 @@ const main = async () => {
         })
     )
     
-    redisClient.on("error", function (err) {
+    redis.on("error", function (err) {
         console.log("Error " + err);
     });
     //session middle ware must run before apollo 
@@ -39,7 +40,7 @@ const main = async () => {
             name: COOKIE_NAME, //name of cookie
             // @ts-ignore
             store: new RedisStore({
-                client: redisClient, 
+                client: redis, 
                 disableTouch: true,
                 disableTTL: true,
             }),
@@ -60,7 +61,7 @@ const main = async () => {
             resolvers: [HelloResolver, PostResolver, UserResolver],
             validate: false,
         }),
-        context: ({req, res}) => ({ em: orm.em, req, res })
+        context: ({req, res}) => ({ em: orm.em, req, res , redis}) // this is the @ctx in resolvers
     })
 
     apolloServer.applyMiddleware({ app, cors: false}); //creates a graphQl endpoint on express 

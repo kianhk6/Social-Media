@@ -1,4 +1,5 @@
 import { UsernamePasswordInput } from "src/resolvers/UsernamePasswordInput";
+import { validatePassword } from "./validatePassword";
 
 export const validateRegister = (options: UsernamePasswordInput) => {
     if(options.username.length <= 2){
@@ -25,14 +26,5 @@ export const validateRegister = (options: UsernamePasswordInput) => {
         ;
     }
 
-    if(options.password.length <= 2){ //change this later
-        return  [{
-            field: "password",
-            message: "password length must be bigger than 3"
-        }]
-        ;
-        
-    }
-    return null; 
-
+    return validatePassword(options.password);
 }

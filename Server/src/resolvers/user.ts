@@ -11,10 +11,13 @@ import {
     ObjectType,
 } from "type-graphql";
 import argon2 from "argon2"; //better than bycrypt according to stackoverflow
-import { COOKIE_NAME } from "../constants";
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 import { UsernamePasswordInput } from "./UsernamePasswordInput";
 import { validateRegister } from "../utils/validateRegister";
-import { sendEmail } from "src/utils/sendEmail";
+import { sendEmail } from "../utils/sendEmail";
+import {v4} from "uuid";
+import { validatePassword } from "../utils/validatePassword";
+
 @ObjectType()
 class FieldError {
     @Field()
@@ -35,10 +38,63 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+    @Mutation(() => UserResponse)
+    async changePassword(
+        @Arg('token') token: string,
+        @Arg('password') newPassword: string,
+        @Ctx() {em, redis, req}: MyContext
+    ){
+        // console.log(newPassword)
+        var passwordError = validatePassword(newPassword)
+        if(passwordError){
+            
+            return {errors: [
+                {
+                    field: "password",
+                    message: "password length must be bigger than 3"
+                }
+            ]}
+        };
+        var key = FORGET_PASSWORD_PREFIX + token
+        const userId = await redis.get(key);
+        if(!userId){
+            return {
+                errors: [
+                    {
+                        field: "token",
+                        message: " change password request has timed out",
+                    }
+                ]
+            }
+        }
+
+        const user = await em.findOne(User, {id: parseInt(userId)});
+        if(!user){
+            return {
+                errors: [
+                    {
+                        field: "user",
+                        message: "user no longer exists",
+                    }
+                ]
+            }
+        }
+
+        user.password = await argon2.hash(newPassword)
+        await em.persistAndFlush(user);
+
+        //one time you can change password
+        await redis.del(key);
+        // log in user after change password
+        req.session.userId = user.id;
+
+        return {user};
+    }
+
     @Mutation(() => Boolean)
     async forgotPassword(
         @Arg('email') email : string,
-        @Ctx() {em} : MyContext
+        @Ctx() {em, redis} : MyContext // from context grabbing these
     ){
         const user = await em.findOne(User, {email});
         if(!user){
@@ -46,8 +102,15 @@ export class UserResolver {
             return true;
         }
 
+        const token = v4(); 
 
-        const token = "lskfklsdajmfklcms";
+        await redis.set(
+            FORGET_PASSWORD_PREFIX + token, 
+            user.id, 
+            'ex', 
+            1000 * 60 * 60 * 24 * 3
+        ); //upto 3 days 
+
         await sendEmail(email, 
             `<a href="http://localhost:3000/change-password/${token}"> reset password </a>`)
         return true;

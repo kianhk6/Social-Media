@@ -35,6 +35,7 @@ export class PostResolver{
     ): Promise<Post> {
         const post = await em.findOne(Post, id)
         if(!post){
+            // @ts-ignore
             return null;
         }
         if(typeof title !== 'undefined'){
